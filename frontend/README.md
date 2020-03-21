@@ -6,3 +6,9 @@ Content is built into `../static` which the Go service serves.
 ```bash
 npm run watch
 ```
+
+## Included Dependencies and Dev-Dependencies
+* axios
+* eslint
+* vuetify
+* vue-class-component

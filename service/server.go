@@ -4,10 +4,17 @@ import (
     //"./repositories"
     "encoding/json"
     "fmt"
+    "github.com/google/uuid"
     "github.com/gorilla/mux"
     "net/http"
     //"strconv"
 )
+
+type Widget struct {
+    Id string `json:"id"`
+    Name string `json:"name"`
+    Price float32 `json:"price"`
+}
 
 type Server struct {
     //gameRepository repositories.GameRepository
@@ -26,7 +33,7 @@ func NewServer() *Server {
 func (s *Server) Run() {
 
     router := mux.NewRouter()
-    router.HandleFunc("/api/widgets", s.getWidgets).Methods("GET")
+    router.HandleFunc("/api/widgets/123", s.getWidgets).Methods("GET")
     router.PathPrefix("/").Handler(http.FileServer(http.Dir("../static")))
 
     httpServer := &http.Server{
@@ -65,7 +72,12 @@ func (s Server) getWidgets(w http.ResponseWriter, r *http.Request) {
     //if err := json.NewEncoder(w).Encode(s.userGameRepository.Get(start, count, filter)); err != nil {
     //    fmt.Fprintf(w, "Error encoding JSON response: %s", err)
     //}
-    if err := json.NewEncoder(w).Encode("Hello world"); err != nil {
+
+    uuid, err := uuid.NewUUID()
+    if err != nil {
+        fmt.Fprintf(w, "Error generating UUID: %s\n", err)
+    }
+    if err := json.NewEncoder(w).Encode(&Widget{ uuid.String(), "widget1", 32.4 }); err != nil {
         fmt.Fprintf(w, "Error encoding JSON response: %s", err)
     }
 }
