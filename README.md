@@ -5,5 +5,5 @@ Postgres backend.  Perfect for simple webapps.
 ## Setup
 * Run `ddl/schema-ddl.sql` to set up `demo_schema` in a localhost Postgres
   instance
-* `cd service && go *.go`
+* `cd service && go run *.go`
 * Open `http://localhost:3000`
