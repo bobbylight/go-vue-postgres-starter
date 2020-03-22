@@ -41,7 +41,7 @@ export default class MainContent extends Vue {
     widgets: Widget[] = [];
 
     getItems() {
-        restApi.getWidget("123").then((widget: Widget) => {
+        restApi.getWidget("111").then((widget: Widget) => {
             this.widgets.push(widget);
         });
     }

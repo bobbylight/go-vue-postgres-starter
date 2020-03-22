@@ -1,13 +1,10 @@
 package main
 
 import (
-    //"./repositories"
     "encoding/json"
     "fmt"
-    "github.com/google/uuid"
     "github.com/gorilla/mux"
     "net/http"
-    //"strconv"
 )
 
 type Widget struct {
@@ -17,23 +14,22 @@ type Widget struct {
 }
 
 type Server struct {
-    //gameRepository repositories.GameRepository
-    //userGameRepository repositories.UserGameRepository
+    repository Repository
 }
 
-//func NewServer(repository *repositories.GameRepository,
-//    userGameRepository *repositories.UserGameRepository) *Server {
 func NewServer() *Server {
+
+    repository := NewRepository()
+
     return &Server{
-        //gameRepository: *repository,
-        //userGameRepository: *userGameRepository,
+        repository: *repository,
     }
 }
 
 func (s *Server) Run() {
 
     router := mux.NewRouter()
-    router.HandleFunc("/api/widgets/123", s.getWidgets).Methods("GET")
+    router.HandleFunc("/api/widgets/{id}", s.getWidgetById).Methods("GET")
     router.PathPrefix("/").Handler(http.FileServer(http.Dir("../static")))
 
     httpServer := &http.Server{
@@ -45,39 +41,13 @@ func (s *Server) Run() {
 }
 
 
-func (s Server) getWidgets(w http.ResponseWriter, r *http.Request) {
+func (s Server) getWidgetById(w http.ResponseWriter, r *http.Request) {
 
-    //startStr := r.URL.Query().Get("start")
-    //if startStr == "" {
-    //    startStr = "0"
-    //}
-    //
-    //start, err := strconv.Atoi(startStr)
-    //if err != nil {
-    //    fmt.Fprintf(w, "Error converting start request param to integer: %s\n", err)
-    //}
-    //
-    //endStr := r.URL.Query().Get("count")
-    //if endStr == "" {
-    //    endStr = "10"
-    //}
-    //
-    //count, err := strconv.Atoi(endStr)
-    //if err != nil {
-    //    fmt.Fprintf(w, "Error converting count request param to integer: %s\n", err)
-    //}
-    //
-    //filter := r.URL.Query().Get("filter")
+    vars := mux.Vars(r)
+    id := vars["id"]
 
-    //if err := json.NewEncoder(w).Encode(s.userGameRepository.Get(start, count, filter)); err != nil {
-    //    fmt.Fprintf(w, "Error encoding JSON response: %s", err)
-    //}
-
-    uuid, err := uuid.NewUUID()
-    if err != nil {
-        fmt.Fprintf(w, "Error generating UUID: %s\n", err)
-    }
-    if err := json.NewEncoder(w).Encode(&Widget{ uuid.String(), "widget1", 32.4 }); err != nil {
+    widget := s.repository.getWidgetById(id)
+    if err := json.NewEncoder(w).Encode(widget); err != nil {
         fmt.Fprintf(w, "Error encoding JSON response: %s", err)
     }
 }
