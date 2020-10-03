@@ -3,30 +3,11 @@
         <v-row class="text-center">
             <v-col class="mb-4">
                 <h1 class="display-2 font-weight-bold mb-3">
-                    Welcome to Your Go/Vuetify/Postgres Application
+                    Tasks for {{ date | date }}
                 </h1>
-
-                <p class="subheading font-weight-regular">
-                    Click here to make a REST call
-                </p>
-                <v-btn @click="getItems()">Click Me</v-btn>
             </v-col>
         </v-row>
-
-        <v-row
-            v-for="widget in widgets"
-            :key="widget.id"
-            class="justify-center"
-        >
-            <v-col cols="8">
-                <v-card>
-                    <v-card-title>
-                        {{ widget.name }}
-                    </v-card-title>
-                    <v-card-text>Price: ${{ widget.price }}</v-card-text>
-                </v-card>
-            </v-col>
-        </v-row>
+        <task-list :tasks="$store.state.tasks" />
     </v-container>
 </template>
 
@@ -34,16 +15,31 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import restApi from "@/rest-api";
-import { Widget } from "@/app";
+import { DataPage, Task } from "@/app";
+import TaskList from "@/task-list.vue";
+import { dateFilter } from "@/filters";
 
-@Component
+@Component({
+    components: { TaskList },
+    filters: { date: dateFilter },
+})
 export default class MainContent extends Vue {
-    widgets: Widget[] = [];
+    tasks: Task[] = [];
 
-    getItems() {
-        restApi.getWidget("111").then((widget: Widget) => {
-            this.widgets.push(widget);
+    date: Date = new Date();
+
+    mounted() {
+        restApi.getTasks().then((dataPage: DataPage<Task>) => {
+            this.$store.commit("setTasks", dataPage.data);
         });
     }
 }
 </script>
+
+<style lang="less">
+.v-btn.add-button {
+    top: 5rem !important;
+    right: 3rem !important;
+    z-index: 100;
+}
+</style>
